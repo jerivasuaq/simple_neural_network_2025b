@@ -1,8 +1,8 @@
 # Gradient descent, how neural networks learn | Deep Learning Chapter 2 - YouTube
 
 # Recap
- Last video I laid out the structure of a neural network. I'll give a quick recap here so that it's fresh in our minds, and then I have two main goals for this video. The first is to introduce the idea of gradient descent, which underlies not only how neural networks learn, but how a lot of other machine learning works as well.
-Then after that we'll dig in a little more into how this particular network performs, and what those hidden layers of neurons end up looking for. As a reminder, our goal here is the classic example of handwritten digit recognition, the hello world of neural networks. These digits are rendered on a 28x28 pixel grid, each pixel with some grayscale value between 0 and 1.
+
+Our goal here is the classic example of handwritten digit recognition, the hello world of neural networks. These digits are rendered on a 28x28 pixel grid, each pixel with some grayscale value between 0 and 1.
 Those are what determine the activations of 784 neurons in the input layer of the network. And then the activation for each neuron in the following layers is based on a weighted sum of all the activations in the previous layer, plus some special number called a bias. Then you compose that sum with some other function, like the sigmoid squishification, or a relu, the way I walked through last video.
 In total, given the somewhat arbitrary choice of two hidden layers with 16 neurons each, the network has about 13,000 weights and biases that we can adjust, and it's these values that determine what exactly the network actually does. Then what we mean when we say that this network classifies a given digit is that the brightest of those 10 neurons in the final layer corresponds to that digit.
 
