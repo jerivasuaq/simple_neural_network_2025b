@@ -98,3 +98,48 @@ def get_mnist():
     test_features, test_labels = try_download(url_test_image, url_test_labels, num_test_samples)
     
     return train_features, train_labels, test_features, test_labels
+
+
+# Call the function to get the data
+# Note: I've corrected some bugs in the original file parsing logic (magic numbers)
+# to ensure it runs correctly. The function below is the corrected version.
+
+def get_mnist_corrected():
+    import gzip, os, struct
+    from urllib.request import urlretrieve
+    
+    def parse_data(src_url, num_samples, is_labels=False):
+        print(f"Downloading and parsing {src_url}")
+        gzfname, _ = urlretrieve(src_url, "./delete.me")
+        try:
+            with gzip.open(gzfname, 'rb') as gz:
+                magic_number = struct.unpack('>I', gz.read(4))[0]
+                expected_magic = 2049 if is_labels else 2051
+                if magic_number != expected_magic:
+                    raise ValueError(f"Invalid magic number {magic_number}, expected {expected_magic}")
+                
+                num_items = struct.unpack('>I', gz.read(4))[0]
+                if num_items != num_samples:
+                    raise ValueError(f"Expected {num_samples} items, file contains {num_items}")
+
+                if is_labels:
+                    data = np.frombuffer(gz.read(), dtype=np.uint8)
+                else:
+                    num_rows = struct.unpack('>I', gz.read(4))[0]
+                    num_cols = struct.unpack('>I', gz.read(4))[0]
+                    if num_rows != 28 or num_cols != 28:
+                        raise ValueError("Images are not 28x28")
+                    data = np.frombuffer(gz.read(), dtype=np.uint8).reshape(num_samples, 28, 28)
+        finally:
+            os.remove(gzfname)
+        return data
+
+    server = 'https://raw.githubusercontent.com/fgnt/mnist/master'
+    train_count, test_count = 60000, 10000
+    
+    x_train = parse_data(f'{server}/train-images-idx3-ubyte.gz', train_count) / 255.0
+    y_train = parse_data(f'{server}/train-labels-idx1-ubyte.gz', train_count, is_labels=True)
+    x_test = parse_data(f'{server}/t10k-images-idx3-ubyte.gz', test_count) / 255.0
+    y_test = parse_data(f'{server}/t10k-labels-idx1-ubyte.gz', test_count, is_labels=True)
+    
+    return x_train, y_train, x_test, y_test
